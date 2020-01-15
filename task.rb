@@ -1,3 +1,6 @@
+require 'date'
+
+# Класс Задача, разновидность базового класса "Запись"
 class Task < Post
   def initialize
     super
