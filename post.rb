@@ -1,9 +1,16 @@
 # Базовый класс "Запись"
 # Задает основные методы и свойства, присущие всем разновидностям Записи
 class Post
+  def self.post_types
+    [Memo, Link, Task]
+  end
+
+  def self.create(type_index)
+    return post_types[type_index].new
+  end
 
   def initialize
-    @created_at = Time.now
+    @created_at = Time.now # статический метод
     @text = nil
   end
 
