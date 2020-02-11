@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Класс Ссылка, разновидность базового класса "Запись"
 class Link < Post
   def initialize
@@ -6,16 +8,16 @@ class Link < Post
   end
 
   def read_from_console
-    puts "Адрес ссылки:"
+    puts 'Адрес ссылки:'
     @url = STDIN.gets.strip
 
-    puts "Что за ссылка?"
+    puts 'Что за ссылка?'
     @text = STDIN.gets.strip
   end
 
   def to_strings
-    time_string = "Создано: #{@created_at.strftime("%Y.%m.%d, %H:%M:%S")} \n\r \n\r"
+    time_string = "Создано: #{@created_at.strftime('%Y.%m.%d, %H:%M:%S')} \n\r \n\r"
 
-    return [@url, @text, time_string]
+    [@url, @text, time_string]
   end
 end

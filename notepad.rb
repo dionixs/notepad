@@ -1,23 +1,27 @@
-require_relative 'post'
-require_relative 'task'
-require_relative 'memo'
-require_relative 'link'
+# frozen_string_literal: true
 
-puts "Привет, я твой блокнот!"
-puts "Что хотите записать в блокнот?"
+require_relative 'lib/post'
+require_relative 'lib/task'
+require_relative 'lib/memo'
+require_relative 'lib/link'
+
+puts 'Привет, я твой блокнот!'
+
+puts 'Что хотите записать в блокнот?'
+
 choices = Post.post_types
 
 choice = -1
 
 until choice >= 0 && choice < choices.size
 
-  choices.each_with_index do |type, index |
+  choices.each_with_index do |type, index|
     puts "\t#{index}. #{type}"
   end
 
-  print ">> "
+  print '>> '
 
-  choice = STDIN.gets.chomp.to_i
+  choice = STDIN.gets.to_i
 end
 
 entry = Post.create(choice)
@@ -26,4 +30,4 @@ entry.read_from_console
 
 entry.save
 
-puts "Ура, запись сохранена!"
+puts 'Ура, запись сохранена!'

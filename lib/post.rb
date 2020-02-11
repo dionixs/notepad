@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Базовый класс "Запись"
 # Задает основные методы и свойства, присущие всем разновидностям Записи
 class Post
@@ -6,7 +8,7 @@ class Post
   end
 
   def self.create(type_index)
-    return post_types[type_index].new
+    post_types[type_index].new
   end
 
   def initialize
@@ -28,7 +30,7 @@ class Post
   def save
     file = File.new(file_path, 'w:UTF-8')
 
-    for item in to_strings do
+    to_strings.each do |item|
       file.puts(item)
     end
 
@@ -37,10 +39,12 @@ class Post
 
   # путь к файлу, куда записывать содержимое объекта
   def file_path
-    current_path = File.dirname(__FILE__)
+    Dir.mkdir('data') unless File.exist?('data')
 
-    file_name = @created_at.strftime("#{self.class.name}_%Y-%m-%d_%H-%M-%S.txt")
+    current_path = './data'
 
-    return current_path + '/' + file_name
+    file_name = @created_at.strftime("#{self.class.name}-%d-%m-%Y-%H-%M-%S.txt")
+
+    current_path + '/' + file_name
   end
 end
