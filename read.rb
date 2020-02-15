@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative 'lib/post'
 require_relative 'lib/task'
 require_relative 'lib/memo'

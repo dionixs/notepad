@@ -23,10 +23,8 @@ class Memo < Post
   end
 
   def to_db_hash
-    return super.merge(
-        {
-            'text' => @text.join('\n\r')
-        }
+    super.merge(
+      'text' => @text.join('\n\r')
     )
   end
 

@@ -5,11 +5,10 @@ require 'sqlite3'
 # Базовый класс "Запись"
 # Задает основные методы и свойства, присущие всем разновидностям Записи
 class Post
-
   @@SQLITE_DB_FILE = './db/notepad.db'
 
   def self.post_types
-    {'Memo' => Memo, 'Link' => Link, 'Task' => Task}
+    { 'Memo' => Memo, 'Link' => Link, 'Task' => Task }
   end
 
   def self.create(type)
@@ -22,7 +21,7 @@ class Post
     if !id.nil?
       db.results_as_hash = true
 
-      result = db.execute("SELECT * FROM posts WHERE rowid = ?", id)
+      result = db.execute('SELECT * FROM posts WHERE rowid = ?', id)
       result = result[0] if result.is_a? Array
       db.close
 
@@ -35,21 +34,21 @@ class Post
   def self.find_specific_post(id, result)
     if result.nil?
       puts "Такой id #{id} не найден в базе :("
-      return nil
+      nil
     else
       post = create(result['type'])
       post.load_data(result)
-      return post
+      post
     end
   end
 
   def self.find_posts(type, limit, db)
     db.results_as_hash = false
 
-    query = "SELECT rowid, * FROM posts "
-    query += "WHERE type = :type " unless type.nil?
-    query += "ORDER by rowid DESC "
-    query += "LIMIT :limit " unless limit.nil?
+    query = 'SELECT rowid, * FROM posts '
+    query += 'WHERE type = :type ' unless type.nil?
+    query += 'ORDER by rowid DESC '
+    query += 'LIMIT :limit ' unless limit.nil?
 
     statement = db.prepare(query)
     statement.bind_param('type', type) unless type.nil?
@@ -59,7 +58,7 @@ class Post
     statement.close
     db.close
 
-    return result
+    result
   end
 
   def initialize
@@ -68,12 +67,10 @@ class Post
   end
 
   # тут записи должны запрашивать ввод пользователя
-  def read_from_console
-  end
+  def read_from_console; end
 
   # возвращает содержимое объекта в виде массива строк
-  def to_strings
-  end
+  def to_strings; end
 
   # сохранение записи в файл
   def save
@@ -102,26 +99,26 @@ class Post
     db.results_as_hash = true
 
     db.execute(
-        "INSERT INTO posts (" +
-            to_db_hash.keys.join(',') +
-            ")" +
-            " VALUES (" +
-            ('?,' * to_db_hash.keys.size).chomp(',') + # (?, ?, ?)
-            ")",
-        to_db_hash.values
+      'INSERT INTO posts (' +
+          to_db_hash.keys.join(',') +
+          ')' \
+          ' VALUES (' +
+          ('?,' * to_db_hash.keys.size).chomp(',') + # (?, ?, ?)
+          ')',
+      to_db_hash.values
     )
 
     insert_row_id = db.last_insert_row_id
 
     db.close
 
-    return insert_row_id
+    insert_row_id
   end
 
   def to_db_hash
     {
-        'type' => self.class.name,
-        'created_at' => @created_at.to_s
+      'type' => self.class.name,
+      'created_at' => @created_at.to_s
     }
   end
 
