@@ -29,12 +29,14 @@ if result.is_a? Post
     puts line
   end
 else
+  exit if result.nil?
+
   print "| id\t| @type\t|  @created_at\t\t\t|  @text \t\t\t| @url\t\t| @due_date \t "
 
   result.each do |row|
     puts
     row.each do |element|
-      print "| #{element.to_s.delete("\\n\\r")[0..40]}\t"
+      print "| #{element.to_s.delete("\n")[0..40]}\t"
     end
   end
 end

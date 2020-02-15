@@ -23,41 +23,43 @@ class Post
       db.results_as_hash = true
 
       result = db.execute("SELECT * FROM posts WHERE rowid = ?", id)
-
       result = result[0] if result.is_a? Array
       db.close
 
-      if result.empty?
-        puts "Такой id #{id} не найден в базе :("
-        return nil
-      else
-        post = create(result['type'])
-
-        post.load_data(result)
-
-        return post
-      end
+      find_specific_post(id, result)
     else
-      db.results_as_hash = false
-
-      query = "SELECT rowid, * FROM posts "
-
-      query += "WHERE type = :type " unless type.nil?
-      query += "ORDER by rowid DESC "
-
-      query +=  "LIMIT :limit " unless limit.nil?
-
-      statement = db.prepare(query)
-
-      statement.bind_param('type', type) unless type.nil?
-      statement.bind_param('limit', limit) unless limit.nil?
-
-      result = statement.execute!
-      statement.close
-      db.close
-
-      return result
+      find_posts(type, limit, db)
     end
+  end
+
+  def self.find_specific_post(id, result)
+    if result.nil?
+      puts "Такой id #{id} не найден в базе :("
+      return nil
+    else
+      post = create(result['type'])
+      post.load_data(result)
+      return post
+    end
+  end
+
+  def self.find_posts(type, limit, db)
+    db.results_as_hash = false
+
+    query = "SELECT rowid, * FROM posts "
+    query += "WHERE type = :type " unless type.nil?
+    query += "ORDER by rowid DESC "
+    query += "LIMIT :limit " unless limit.nil?
+
+    statement = db.prepare(query)
+    statement.bind_param('type', type) unless type.nil?
+    statement.bind_param('limit', limit) unless limit.nil?
+
+    result = statement.execute!
+    statement.close
+    db.close
+
+    return result
   end
 
   def initialize
@@ -104,7 +106,7 @@ class Post
             to_db_hash.keys.join(',') +
             ")" +
             " VALUES (" +
-            ('?,'*to_db_hash.keys.size).chomp(',') + # (?, ?, ?)
+            ('?,' * to_db_hash.keys.size).chomp(',') + # (?, ?, ?)
             ")",
         to_db_hash.values
     )
