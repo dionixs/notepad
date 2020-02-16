@@ -30,16 +30,11 @@ rescue OptionParser::InvalidOption, OptionParser::MissingArgument
   exit
 end
 
-begin
-  result = if options[:id].nil?
+result = if options[:id].nil?
              Post.find_all(options[:limit], options[:type])
            else
              Post.find_by_id(options[:id])
            end
-rescue SQLite3::SQLException => e
-  puts e
-  exit
-end
 
 if result.is_a? Post
   puts "Запись #{result.class.name}, id = #{options[:id]}"

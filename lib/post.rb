@@ -8,7 +8,7 @@ class Post
   @@SQLITE_DB_FILE = './db/notepad.db'
 
   def self.post_types
-    { 'Memo' => Memo, 'Link' => Link, 'Task' => Task }
+    {'Memo' => Memo, 'Link' => Link, 'Task' => Task}
   end
 
   def self.create(type)
@@ -17,12 +17,18 @@ class Post
 
   def self.find_by_id(id)
     db = SQLite3::Database.open(@@SQLITE_DB_FILE)
-
     db.results_as_hash = true
 
-    result = db.execute('SELECT * FROM posts WHERE rowid = ?', id)
-    result = result[0] if result.is_a? Array
+    begin
+      result = db.execute('SELECT * FROM posts WHERE rowid = ?', id)
+    rescue SQLite3::SQLException => e
+      puts "Не удалось выполнить запрос к базе: #{@@SQLITE_DB_FILE}"
+      abort e.message
+    end
+
     db.close
+
+    result = result[0] if result.is_a? Array
 
     if result.nil?
       puts "Такой id #{id} не найден в базе :("
@@ -36,6 +42,7 @@ class Post
 
   def self.find_all(limit, type)
     db = SQLite3::Database.open(@@SQLITE_DB_FILE)
+
     db.results_as_hash = false
 
     query = 'SELECT rowid, * FROM posts '
@@ -43,11 +50,23 @@ class Post
     query += 'ORDER by rowid DESC '
     query += 'LIMIT :limit ' unless limit.nil?
 
-    statement = db.prepare(query)
+    begin
+      statement = db.prepare(query)
+    rescue SQLite3::SQLException => e
+      puts "Не удалось выполнить запрос к базе: #{@@SQLITE_DB_FILE}"
+      abort e.message
+    end
+
     statement.bind_param('type', type) unless type.nil?
     statement.bind_param('limit', limit) unless limit.nil?
 
-    result = statement.execute!
+    begin
+      result = statement.execute!
+    rescue SQLite3::SQLException => e
+      puts "Не удалось выполнить запрос к базе: #{@@SQLITE_DB_FILE}"
+      abort e.message
+    end
+
     statement.close
     db.close
 
@@ -60,10 +79,12 @@ class Post
   end
 
   # тут записи должны запрашивать ввод пользователя
-  def read_from_console; end
+  def read_from_console;
+  end
 
   # возвращает содержимое объекта в виде массива строк
-  def to_strings; end
+  def to_strings;
+  end
 
   # сохранение записи в файл
   def save
@@ -88,31 +109,33 @@ class Post
   end
 
   def save_to_db
-
     db = SQLite3::Database.open(@@SQLITE_DB_FILE)
     db.results_as_hash = true
 
-    db.execute(
-      'INSERT INTO posts (' +
-          to_db_hash.keys.join(',') +
-          ')' \
+    begin
+      db.execute(
+          'INSERT INTO posts (' +
+              to_db_hash.keys.join(',') +
+              ')' \
           ' VALUES (' +
-          ('?,' * to_db_hash.keys.size).chomp(',') + # (?, ?, ?)
-          ')',
-      to_db_hash.values
-    )
+              ('?,' * to_db_hash.keys.size).chomp(',') + # (?, ?, ?)
+              ')',
+          to_db_hash.values
+      )
+    rescue SQLite3::SQLException => e
+      puts "Не удалось выполнить запрос к базе: #{@@SQLITE_DB_FILE}"
+      abort e.message
+    end
 
     insert_row_id = db.last_insert_row_id
-
     db.close
-
     insert_row_id
   end
 
   def to_db_hash
     {
-      'type' => self.class.name,
-      'created_at' => @created_at.to_s
+        'type' => self.class.name,
+        'created_at' => @created_at.to_s
     }
   end
 

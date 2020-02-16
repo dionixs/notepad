@@ -28,11 +28,6 @@ entry = Post.create(choices[choice])
 
 entry.read_from_console
 
-begin
-  id = entry.save_to_db
-rescue SQLite3::SQLException => e
-  puts e
-  exit
-end
+rowid = entry.save_to_db
 
-puts "Ура, запись сохранена, id = #{id}"
+puts "Ура, запись сохранена, id = #{rowid}"
