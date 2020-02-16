@@ -31,9 +31,9 @@ rescue OptionParser::InvalidOption, OptionParser::MissingArgument
 end
 
 result = if options[:id].nil?
-             Post.find_all(options[:limit], options[:type])
-           else
-             Post.find_by_id(options[:id])
+           Post.find_all(options[:limit], options[:type])
+         else
+           Post.find_by_id(options[:id])
            end
 
 if result.is_a? Post

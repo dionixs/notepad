@@ -8,7 +8,7 @@ class Post
   @@SQLITE_DB_FILE = './db/notepad.db'
 
   def self.post_types
-    {'Memo' => Memo, 'Link' => Link, 'Task' => Task}
+    { 'Memo' => Memo, 'Link' => Link, 'Task' => Task }
   end
 
   def self.create(type)
@@ -79,12 +79,10 @@ class Post
   end
 
   # тут записи должны запрашивать ввод пользователя
-  def read_from_console;
-  end
+  def read_from_console; end
 
   # возвращает содержимое объекта в виде массива строк
-  def to_strings;
-  end
+  def to_strings; end
 
   # сохранение записи в файл
   def save
@@ -114,13 +112,13 @@ class Post
 
     begin
       db.execute(
-          'INSERT INTO posts (' +
-              to_db_hash.keys.join(',') +
-              ')' \
-          ' VALUES (' +
-              ('?,' * to_db_hash.keys.size).chomp(',') + # (?, ?, ?)
-              ')',
-          to_db_hash.values
+        'INSERT INTO posts (' +
+            to_db_hash.keys.join(',') +
+            ')' \
+        ' VALUES (' +
+            ('?,' * to_db_hash.keys.size).chomp(',') + # (?, ?, ?)
+            ')',
+        to_db_hash.values
       )
     rescue SQLite3::SQLException => e
       puts "Не удалось выполнить запрос к базе: #{@@SQLITE_DB_FILE}"
@@ -134,8 +132,8 @@ class Post
 
   def to_db_hash
     {
-        'type' => self.class.name,
-        'created_at' => @created_at.to_s
+      'type' => self.class.name,
+      'created_at' => @created_at.to_s
     }
   end
 
